@@ -1,0 +1,15 @@
+:root {
+	--bg-primary: #a3a3a3; /* Cor de fundo escura */
+	--bg-secondary: #671eb9; /* Cor de fundo secundária para elementos como cards */
+	--text-primary: #e2e2e2; /* Cor do texto clara para contraste */
+	--text-secondary: #292929; /* Cor de texto secundária para detalhes */
+	--accent-color: #6e0797; /* Cor de destaque para botões e links */
+	--accent-color-hover: #4005af; /* Cor de destaque para hover em botões e links */
+	--accent-secondary-color: #3b63e9; /* Cor de destaque secundária para hover em botões e links */
+	--accent-secondary-color-hover: #0609b1; /* Cor de destaque secundária para hover em botões e links */
+	--error-color: #ff4d4d; /* Cor para mensagens de erro */
+	--success-color: #3872c9; /* Cor para mensagens de sucesso */
+	--transition-duration: 0.3s; /* Duração padrão para transições suaves */
+	--white: #fcfff2; /* Cor branca para elementos como bordas e texto */
+	--black: #141414; /* Cor preta para elementos como bordas e texto */
+}

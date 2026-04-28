@@ -1,0 +1,12 @@
+namespace Portfolio.Application.Users;
+
+/// <summary>
+/// Data Transfer Object for User entity
+/// </summary>
+public class UserWithRolesDto
+{
+	public Guid Id { get; set; }
+	public string Username { get; set; } = string.Empty;
+	public string Email { get; set; } = string.Empty;
+	public List<RoleDto> Roles { get; set; } = [];
+}

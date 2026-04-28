@@ -1,0 +1,110 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "docker-compose-up",
+			"type": "shell",
+			"command": "docker compose --env-file .env.development up -d --build", // or 'docker-compose up -d' if using v1
+			// docker compose --env-file .env.development build frontend
+			// docker compose --env-file .env.development up -d --build
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			},
+			"group": "build"
+		},
+		{
+			"label": "build",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/backend/Portfolio.Api/Portfolio.Api.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary;ForceNoAlign"
+			],
+			"dependsOn": ["docker-compose-up"],
+			"dependsOrder": "sequence",
+			"problemMatcher": "$msCompile",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "docker-compose-stop",
+			"type": "shell",
+			"command": "docker compose --env-file .env.development stop", // or 'docker-compose stop' if using v1
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"close": true
+			}
+		},
+		{
+			"label": "watch",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"watch",
+				"--project",
+				"${workspaceFolder}/backend/Portfolio.Api/Portfolio.Api.csproj",
+				"--launch-profile",
+				"https"
+			],
+			"dependsOn": ["docker-compose-up"],
+			"dependsOrder": "sequence",
+			"problemMatcher": [
+				{
+					"base": "$msCompile",
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "^\\s*(?:info|warn|fail):\\s+Building\\.\\.\\.",
+						"endsPattern": "^\\s*(?:info|warn|fail):\\s+(?:Application started|Now listening on:|dotnet watch)"
+					}
+				}
+			],
+			"isBackground": true
+		},
+		{
+			"label": "clean",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"clean",
+				"${workspaceFolder}/backend/Portfolio.Api/Portfolio.Api.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary;ForceNoAlign"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "restore",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"restore",
+				"${workspaceFolder}/backend/Portfolio.Api/Portfolio.Api.csproj"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Docker: Start DEV",
+			"type": "shell",
+			"command": "docker compose --env-file .env.development up -d",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"group": "test"
+		},
+		{
+			"label": "Docker: Stop All",
+			"type": "shell",
+			"command": "docker compose down",
+			"presentation": {
+				"reveal": "silent"
+			}
+		}
+	]
+}

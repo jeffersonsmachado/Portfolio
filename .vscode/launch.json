@@ -1,0 +1,36 @@
+{
+	// Launch configurations for Portfolio.Api
+	"version": "0.2.0",
+	"configurations": [
+		{
+			// Recommended: Hot reload with debugger attached
+			// Start watch task first, then attach - changes reload automatically
+			"name": "Attach to Watch",
+			"type": "coreclr",
+			"request": "attach",
+			"processName": "Portfolio.Api",
+			"preLaunchTask": "watch",
+			"postDebugTask": "docker-compose-stop"
+		},
+		{
+			// Alternative: Fresh build on each session
+			"name": "Launch",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build",
+			"postDebugTask": "docker-compose-stop",
+			"program": "${workspaceFolder}/backend/Portfolio.Api/bin/Debug/net9.0/Portfolio.Api.dll",
+			"cwd": "${workspaceFolder}/backend/Portfolio.Api",
+			"stopAtEntry": false,
+			"serverReadyAction": {
+				"action": "openExternally",
+				"pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+				"uriFormat": "%s/scalar"
+			},
+			"env": {
+				"ASPNETCORE_ENVIRONMENT": "Development",
+				"ASPNETCORE_URLS": "https://localhost:7132;http://localhost:5219"
+			}
+		}
+	]
+}

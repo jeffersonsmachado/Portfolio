@@ -1,0 +1,21 @@
+/* Reset básico para remover comportamentos indesejados dos navegadores */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	height: 100%;
+	background-color: #1a1a1a; /* Mantém o fundo escuro consistente */
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	overflow-x: hidden; /* Evita barra de rolagem horizontal acidental */
+}
+
+/* O container principal que o Vue injeta no HTML */
+#app {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}

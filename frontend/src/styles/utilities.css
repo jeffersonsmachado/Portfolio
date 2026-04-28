@@ -1,0 +1,73 @@
+.bg-primary {
+	background-color: var(--bg-primary);
+}
+.bg-secondary {
+	background-color: var(--bg-secondary);
+}
+.text-primary {
+	color: var(--text-primary);
+}
+.text-secondary {
+	color: var(--text-secondary);
+}
+.accent-color {
+	color: var(--accent-color);
+}
+.accent-color:hover {
+	color: var(--accent-color-hover);
+}
+.error {
+	color: var(--error-color);
+}
+.success {
+	color: var(--success-color);
+}
+
+/* buttons */
+
+.btn-primary {
+	background-color: var(--accent-color);
+	color: var(--text-primary);
+	font-size: large;
+	border: 5px solid var(--white);
+	border-radius: 1rem;
+	padding: 4px;
+	cursor: pointer;
+	transition: background-color var(--transition-duration);
+}
+
+.btn-primary:hover {
+	background-color: var(--accent-color-hover);
+}
+
+.btn-secondary {
+	background-color: var(--accent-secondary-color);
+	color: var(--text-primary);
+	border: none;
+	border-radius: 4px;
+	padding: 10px 20px;
+	cursor: pointer;
+	transition: background-color var(--transition-duration);
+}
+
+.btn-secondary:hover {
+	background-color: var(--accent-secondary-color-hover);
+}
+
+/* text */
+.text-primary {
+	color: var(--text-primary);
+}
+.text-secondary {
+	color: var(--text-secondary);
+}
+
+/* text input */
+.input-primary {
+	background-color: var(--bg-primary);
+	color: var(--text-primary);
+	border: 1px solid var(--white);
+	border-radius: 4px;
+	padding: 8px;
+	transition: border-color var(--transition-duration);
+}

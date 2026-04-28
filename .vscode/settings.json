@@ -1,0 +1,4 @@
+{
+	"dotnet.testExplorer.enabled": true,
+	"fsharp.enableTestExplorer": false
+}

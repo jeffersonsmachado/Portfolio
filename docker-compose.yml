@@ -1,0 +1,74 @@
+services:
+  # POSTGRESQL SERVICE
+  postgres:
+    image: postgres:18-alpine
+    container_name: database
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - portfolio_network
+  # pgadmin4 SERVICE
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    container_name: portfolio-pgadmin4
+    ports:
+      - "${PGADMIN_PORT}:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./config/servers.json:/pgadmin4/servers.json
+    networks:
+      - portfolio_network
+
+  # FRONTEND SERVICE
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: portfolio-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - portfolio_network
+
+    # MAILPIT SERVICE
+  mailpit:
+    image: axllent/mailpit
+    container_name: portfolio-mailpit
+    ports:
+      - "8025:8025" # Interface Web (UI)
+      - "1025:1025" # Porta SMTP
+    volumes:
+      - mailpit_data:/data
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_DATA_FILE: /data/mailpit.db
+    networks:
+      - portfolio_network
+
+volumes:
+  postgres_data:
+    name: portfolio_postgres_data
+  pgadmin_data:
+    name: portfolio_pgadmin_data
+  mailpit_data:
+    name: portfolio_mailpit_data
+
+networks:
+  portfolio_network:
+    name: portfolio_network
+    driver: bridge

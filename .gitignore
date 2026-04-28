@@ -1,0 +1,148 @@
+# .NET / C# gitignore for Portfolio Project
+
+## Build Results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio cache/options
+.vs/
+## .vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## Rider
+.idea/
+*.sln.iml
+
+## MonoDevelop / Xamarin Studio
+*.pidb
+*.pdb.meta
+*.mdb.meta
+
+## Build results
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+## Test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+[Dd]ebugPS/
+[Rr]eleasePS/
+
+## Coverage
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+*.codecoverage
+
+## NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Node (if using frontend tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+## Database
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+## Environment & Secrets
+appsettings.Local.json
+appsettings.*.Local.json
+*.env
+.env.*
+secrets.json
+*.pfx
+*.p12
+*.key
+
+## Logs
+*.log
+logs/
+
+## OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Backup & Temp
+*.bak
+*.swp
+*.tmp
+*~
+
+## Publish profiles (sensitive)
+*.pubxml
+*.publishproj
+
+## SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+## Entity Framework Migrations (optional - usually tracked)
+# Migrations/
+
+## ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## JetBrains Rider
+.idea/
+*.sln.iml
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Azure Functions
+local.settings.json
+
+## Docker
+**/docker-compose.override.yml
+
+## Copilot workspace
+.copilot/
+.fake
+
+
+## Custom ignores for Portfolio Project
+sql/init.sql
+backend/Portfolio.Api/appsettings.Development.json
+config/servers.json
