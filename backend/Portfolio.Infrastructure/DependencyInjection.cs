@@ -13,6 +13,7 @@ using Portfolio.Infrastructure.Services;
 using Portfolio.Application.Services;
 using MassTransit;
 using Portfolio.Infrastructure.Messaging;
+using Portfolio.Application.Events;
 
 namespace Portfolio.Infrastructure;
 
@@ -81,10 +82,16 @@ public static class DependencyInjection
 		services.AddScoped<SmtpEmailService>();
 		services.AddScoped<IEmailService, RabbitMqEmailPublisher>();
 		services.AddScoped<IJwtProvider, JwtProvider>();
+		services.AddScoped<IEventBus, MassTransitEventBus>();
+
+		services.AddSingleton<ITokenRevocationService, TokenRevocationService>();
 
 		services.AddMassTransit(x =>
 		{
 			x.AddConsumer<EmailMessageConsumer>();
+			x.AddConsumer<UserRegisteredConsumer>();
+			x.AddConsumer<UserDeletedConsumer>();
+			x.AddConsumer<UserRolesUpdatedConsumer>();
 			x.UsingRabbitMq((ctx, cfg) =>
 			{
 				cfg.Host(configuration["RabbitMq:Host"]!, "/", h =>

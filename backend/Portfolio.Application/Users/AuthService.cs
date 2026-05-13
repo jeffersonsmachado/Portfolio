@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using Portfolio.Application.Events;
 using Portfolio.Application.Services;
 using Portfolio.Application.Users.Dtos;
 using Portfolio.Application.Users.Requests;
@@ -18,12 +19,13 @@ namespace Portfolio.Application.Users;
 /// <param name="emailService">The email service for sending verification emails.</param>
 /// <param name="jwtProvider">The JWT provider for generating authentication tokens.</param>
 /// <param name="passwordHasher">The password hasher for verifying user passwords.</param>
-public class AuthService(IUserRepository userRepository, IEmailService emailService, IJwtProvider jwtProvider, IPasswordHasher passwordHasher) : IAuthService
+public class AuthService(IUserRepository userRepository, IEmailService emailService, IJwtProvider jwtProvider, IPasswordHasher passwordHasher, IEventBus eventBus) : IAuthService
 {
 	private readonly IUserRepository _userRepository = userRepository;
 	private readonly IEmailService _emailService = emailService;
 	private readonly IJwtProvider _jwtProvider = jwtProvider;
 	private readonly IPasswordHasher _passwordHasher = passwordHasher;
+	private readonly IEventBus _eventBus = eventBus;
 
 	// Verifies the provided email and token for email verification.
 	public async Task<Result<UserDto>> VerifyToken(VerifyTokenRequest request, CancellationToken cancellationToken = default)
@@ -163,6 +165,7 @@ public class AuthService(IUserRepository userRepository, IEmailService emailServ
 		// Save to repository
 		await _userRepository.AddAsync(user, cancellationToken);
 
+		await _eventBus.PublishAsync(new UserRegisteredEvent(user.Id, user.Name.Value), cancellationToken);
 
 		string subject = "Welcome to Portfolio!";
 

@@ -1,3 +1,4 @@
+using Portfolio.Application.Events;
 using Portfolio.Application.Users.Requests;
 using Portfolio.Domain.Aggregates.Users;
 using Portfolio.Domain.Shared;
@@ -8,14 +9,10 @@ namespace Portfolio.Application.Users;
 /// Service implementation for User-related operations
 /// </summary>
 /// <param name="userRepository"></param>
-public class UserService(IUserRepository userRepository) : IUserService
+public class UserService(IUserRepository userRepository, IEventBus eventBus) : IUserService
 {
 	private readonly IUserRepository _userRepository = userRepository;
-
-	public async Task<Result<UserDto>> CreateAsync(CreateUserRequest request, CancellationToken cancellationToken = default)
-	{
-		throw new NotImplementedException();
-	}
+	private readonly IEventBus _eventBus = eventBus;
 
 	public async Task<Result<UserDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
 	{
@@ -66,6 +63,9 @@ public class UserService(IUserRepository userRepository) : IUserService
 		}
 
 		await _userRepository.DeleteAsync(user, cancellationToken);
+
+		await _eventBus.PublishAsync(new UserDeletedEvent(user.Id), cancellationToken);
+
 		return Result<UserDto>.Success(new UserDto
 		{
 			Id = user.Id,

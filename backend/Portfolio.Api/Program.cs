@@ -9,6 +9,9 @@ using Portfolio.Api.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Portfolio.Application.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 #region Builder Setup
 
@@ -49,6 +52,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			ValidIssuer = builder.Configuration["Jwt:Issuer"],
 			ValidAudience = builder.Configuration["Jwt:Audience"],
 			IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!)),
+		};
+
+		options.Events = new JwtBearerEvents
+		{
+			OnTokenValidated = context =>
+			{
+				var revocationService = context.HttpContext.RequestServices
+					.GetRequiredService<ITokenRevocationService>();
+
+				var sub = context.Principal?.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+				if (sub != null && Guid.TryParse(sub, out var userId) && revocationService.IsRevoked(userId))
+				{
+					context.Fail("Token revoked");
+				}
+
+				return Task.CompletedTask;
+			}
 		};
 	});
 

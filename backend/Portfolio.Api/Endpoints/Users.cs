@@ -15,12 +15,6 @@ public static class UsersEndpoints
 
 		userGroup.RequireAuthorization(Permissions.UserView);
 
-		userGroup.MapPost("/", async (CreateUserRequest req, IUserService service) =>
-		{
-			return (await service.CreateAsync(req))
-				.ToHttpResult(user => Results.Created($"/users/{user.Id}", user));
-		}).AddEndpointFilter<ValidationFilter<CreateUserRequest>>();
-
 		userGroup.MapGet("/{id:guid}", async (Guid id, IUserService service) =>
 		{
 			return (await service.GetByIdAsync(id))

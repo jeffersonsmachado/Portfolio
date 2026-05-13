@@ -9,7 +9,6 @@ namespace Portfolio.Application.Users;
 /// </summary>
 public interface IUserService
 {
-	public Task<Result<UserDto>> CreateAsync(CreateUserRequest request, CancellationToken cancellationToken = default);
 	public Task<Result<UserDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 	public Task<Result<UserDto>> GetByNameAsync(string name, CancellationToken cancellationToken = default);
 	public Task<Result<IEnumerable<UserDto>>> GetAllAsync(CancellationToken cancellationToken = default);

@@ -1,13 +1,15 @@
+using Portfolio.Application.Events;
 using Portfolio.Domain.Aggregates.Roles;
 using Portfolio.Domain.Aggregates.Users;
 using Portfolio.Domain.Shared;
 
 namespace Portfolio.Application.Users;
 
-public class UserRoleService(IUserRepository userRepository, IRoleRepository roleRepository) : IUserRoleService
+public class UserRoleService(IUserRepository userRepository, IRoleRepository roleRepository, IEventBus eventBus) : IUserRoleService
 {
 	private readonly IUserRepository _userRepository = userRepository;
 	private readonly IRoleRepository _roleRepository = roleRepository;
+	private readonly IEventBus _eventBus = eventBus;
 
 
 	public async Task<Result<RoleDto>> AssignRoleAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default)
@@ -153,6 +155,8 @@ public class UserRoleService(IUserRepository userRepository, IRoleRepository rol
 		}
 
 		await _userRepository.UpdateAsync(user, cancellationToken);
+
+		await _eventBus.PublishAsync(new UserRolesUpdatedEvent(user.Id), cancellationToken);
 
 		return Result<IEnumerable<RoleDto>>.Success(user.Roles.Select(r => new RoleDto { Id = r.Id, Name = r.Name }));
 	}
