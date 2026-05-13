@@ -60,6 +60,17 @@ services:
     networks:
       - portfolio_network
 
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - portfolio_network
+
 volumes:
   postgres_data:
     name: portfolio_postgres_data
@@ -67,6 +78,8 @@ volumes:
     name: portfolio_pgadmin_data
   mailpit_data:
     name: portfolio_mailpit_data
+  rabbitmq_data:
+    name: rabbitmq_data
 
 networks:
   portfolio_network:

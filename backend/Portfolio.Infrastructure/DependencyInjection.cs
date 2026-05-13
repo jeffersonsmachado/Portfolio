@@ -11,6 +11,8 @@ using Portfolio.Infrastructure.Persistence;
 using Portfolio.Infrastructure.Persistence.Repositories;
 using Portfolio.Infrastructure.Services;
 using Portfolio.Application.Services;
+using MassTransit;
+using Portfolio.Infrastructure.Messaging;
 
 namespace Portfolio.Infrastructure;
 
@@ -76,10 +78,25 @@ public static class DependencyInjection
 		services.AddScoped<IUserRoleService, UserRoleService>();
 
 		// INFRASTRUCTURE
-		services.AddScoped<IEmailService, SmtpEmailService>();
+		services.AddScoped<SmtpEmailService>();
+		services.AddScoped<IEmailService, RabbitMqEmailPublisher>();
 		services.AddScoped<IJwtProvider, JwtProvider>();
 
-		services.AddScoped<IPasswordHasher, PasswordHasher>();
+		services.AddMassTransit(x =>
+		{
+			x.AddConsumer<EmailMessageConsumer>();
+			x.UsingRabbitMq((ctx, cfg) =>
+			{
+				cfg.Host(configuration["RabbitMq:Host"]!, "/", h =>
+				{
+					h.Username(configuration["RabbitMq:Username"]!);
+					h.Password(configuration["RabbitMq:Password"]!);
+				});
+
+				cfg.ConfigureEndpoints(ctx);
+			});
+
+		});
 
 		services.AddMemoryCache();
 
