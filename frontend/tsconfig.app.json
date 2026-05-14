@@ -1,8 +1,15 @@
 {
-	"extends": "@vue/tsconfig/tsconfig.dom.json",
 	"compilerOptions": {
 		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
 		"types": ["vite/client"],
+
+		/* DOM */
+		"target": "ES2020",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"jsx": "preserve",
+		"skipLibCheck": true,
 
 		/* Linting */
 		"noUnusedLocals": true,

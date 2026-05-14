@@ -7,6 +7,7 @@ public class MassTransitEventBus(IPublishEndpoint publishEndpoint) : IEventBus
 {
 	public async Task PublishAsync<T>(T message, CancellationToken cancellationToken)
 	{
+		ArgumentNullException.ThrowIfNull(message);
 		await publishEndpoint.Publish(message, cancellationToken);
 	}
 }
