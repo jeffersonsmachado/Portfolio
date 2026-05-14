@@ -158,6 +158,8 @@ public class UserRoleService(IUserRepository userRepository, IRoleRepository rol
 
 		await _eventBus.PublishAsync(new UserRolesUpdatedEvent(user.Id), cancellationToken);
 
+		await _eventBus.PublishAsync(new AuditEvent("user.roles_updated", user.Id, DateTime.UtcNow), cancellationToken);
+
 		return Result<IEnumerable<RoleDto>>.Success(user.Roles.Select(r => new RoleDto { Id = r.Id, Name = r.Name }));
 	}
 }

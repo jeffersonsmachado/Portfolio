@@ -3,6 +3,7 @@ using Portfolio.Domain.Aggregates.Profiles;
 using Portfolio.Domain.Aggregates.Users;
 using Portfolio.Domain.Aggregates.Permissions;
 using Portfolio.Domain.ValueObjects;
+using Portfolio.Domain.Aggregates.Audit;
 
 namespace Portfolio.Infrastructure.Persistence;
 
@@ -13,6 +14,7 @@ public class PortfolioDbContext(DbContextOptions<PortfolioDbContext> options) : 
 	public DbSet<User> Users => Set<User>();
 	public DbSet<Role> Roles => Set<Role>();
 	public DbSet<Permission> Permissions => Set<Permission>();
+	public DbSet<AuditLog> AuditLog => Set<AuditLog>();
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
@@ -154,6 +156,28 @@ public class PortfolioDbContext(DbContextOptions<PortfolioDbContext> options) : 
 				.IsRequired()
 				.HasMaxLength(PermissionConstants.MaxNameLength)
 				.HasColumnType($"character varying({PermissionConstants.MaxNameLength})");
+		});
+
+		modelBuilder.Entity<AuditLog>(entity =>
+		{
+			entity.ToTable("audit_log");
+
+			entity.HasKey(e => e.Id);
+			entity.Property(e => e.Id)
+				.ValueGeneratedNever();
+
+			entity.Property(e => e.Action)
+				.IsRequired()
+				.HasMaxLength(100)
+				.HasColumnType("character varying(100)");
+
+			entity.Property(e => e.UserId)
+				.HasColumnType("uuid")
+				.IsRequired(false);
+
+			entity.Property(e => e.OccurredAt)
+				.HasColumnType("timestamp with time zone")
+				.IsRequired();
 		});
 	}
 }

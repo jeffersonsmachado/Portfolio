@@ -92,6 +92,7 @@ public static class DependencyInjection
 			x.AddConsumer<UserRegisteredConsumer>();
 			x.AddConsumer<UserDeletedConsumer>();
 			x.AddConsumer<UserRolesUpdatedConsumer>();
+			x.AddConsumer<AuditConsumer>();
 			x.UsingRabbitMq((ctx, cfg) =>
 			{
 				cfg.Host(configuration["RabbitMq:Host"]!, "/", h =>

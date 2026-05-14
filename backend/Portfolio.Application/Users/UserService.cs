@@ -66,6 +66,8 @@ public class UserService(IUserRepository userRepository, IEventBus eventBus) : I
 
 		await _eventBus.PublishAsync(new UserDeletedEvent(user.Id), cancellationToken);
 
+		await _eventBus.PublishAsync(new AuditEvent("user.deleted", user.Id, DateTime.UtcNow), cancellationToken);
+
 		return Result<UserDto>.Success(new UserDto
 		{
 			Id = user.Id,

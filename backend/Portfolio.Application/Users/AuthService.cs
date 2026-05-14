@@ -90,6 +90,8 @@ public class AuthService(IUserRepository userRepository, IEmailService emailServ
 				}
 			);
 
+		await _eventBus.PublishAsync(new AuditEvent("user.login", user.Id, DateTime.UtcNow), cancellationToken);
+
 		return Result<LoginDto>.Success(new LoginDto
 		{
 			Token = token,
@@ -166,6 +168,8 @@ public class AuthService(IUserRepository userRepository, IEmailService emailServ
 		await _userRepository.AddAsync(user, cancellationToken);
 
 		await _eventBus.PublishAsync(new UserRegisteredEvent(user.Id, user.Name.Value), cancellationToken);
+
+		await _eventBus.PublishAsync(new AuditEvent("user.registered", user.Id, DateTime.UtcNow), cancellationToken);
 
 		string subject = "Welcome to Portfolio!";
 
