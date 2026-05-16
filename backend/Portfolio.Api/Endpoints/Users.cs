@@ -46,5 +46,11 @@ public static class UsersEndpoints
 		}).RequireAuthorization(Permissions.RolesUpdate)
 		.RequireAuthorization(Permissions.UserUpdate);
 
+		userGroup.MapPut("/{id:guid}", async (Guid id, UpdateUserRequest req, IUserService service) =>
+		{
+			return (await service.UpdateAsync(id, req, cancellationToken))
+				.ToHttpResult(user => Results.Ok(user), StatusCodes.Status404NotFound);
+		}).RequireAuthorization(Permissions.UserUpdate);
+
 	}
 }

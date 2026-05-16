@@ -12,5 +12,6 @@ public interface IUserService
 	public Task<Result<UserDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 	public Task<Result<UserDto>> GetByNameAsync(string name, CancellationToken cancellationToken = default);
 	public Task<Result<IEnumerable<UserDto>>> GetAllAsync(CancellationToken cancellationToken = default);
+	public Task<Result<UserDto>> UpdateAsync(Guid id, UpdateUserRequest user, CancellationToken cancellationToken = default);
 	public Task<Result<UserDto>> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }

@@ -57,10 +57,31 @@ export const useUserStore = defineStore("user", () => {
 		return data;
 	}
 
+	async function updateUser(user: UserDto): Promise<UserDto> {
+		const response = await fetch(`https://localhost:7132/users/${user.id}`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${localStorage.getItem("token")}`,
+			},
+			body: JSON.stringify({ username: user.username, email: user.email }),
+		});
+
+		if (!response.ok) {
+			throw new Error("Failed to update user", {
+				cause: response,
+			});
+		}
+
+		const data = await response.json();
+		return data;
+	}
+
 	return {
 		users,
 		usersWithRoles,
 		fetchUsers,
 		fetchUsersWithRoles,
+		updateUser,
 	};
 });

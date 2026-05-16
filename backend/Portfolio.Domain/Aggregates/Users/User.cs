@@ -151,5 +151,15 @@ public class User
 		}
 	}
 
+	public void UpdateName(string name)
+	{
+		Name = UserName.Create(name);
+	}
+
+	public void UpdateEmail(string email)
+	{
+		Email = Email.Create(email);
+	}
+
 	#endregion
 }

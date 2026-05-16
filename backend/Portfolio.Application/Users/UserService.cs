@@ -2,6 +2,7 @@ using Portfolio.Application.Events;
 using Portfolio.Application.Users.Requests;
 using Portfolio.Domain.Aggregates.Users;
 using Portfolio.Domain.Shared;
+using Portfolio.Domain.ValueObjects;
 
 namespace Portfolio.Application.Users;
 
@@ -52,6 +53,29 @@ public class UserService(IUserRepository userRepository, IEventBus eventBus) : I
 			Username = user.Name.Value,
 			Email = user.Email.Value
 		}));
+	}
+
+	public async Task<Result<UserDto>> UpdateAsync(Guid id, UpdateUserRequest updateUserRequest, CancellationToken cancellationToken = default)
+	{
+		var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+		if (user == null)
+		{
+			return Result<UserDto>.Failure(new Error("USER_NOT_FOUND", "User not found."));
+		}
+		
+		user.UpdateName(UserName.Parse(updateUserRequest.Username));
+		user.UpdateEmail(Email.Parse(updateUserRequest.Email));
+
+		await _userRepository.UpdateAsync(user, cancellationToken);
+		
+		await _eventBus.PublishAsync(new AuditEvent("user.updated", user.Id, DateTime.UtcNow), cancellationToken);
+
+		return Result<UserDto>.Success(new UserDto
+		{
+			Id = user.Id,
+			Username = user.Name.Value,
+			Email = user.Email.Value
+		});
 	}
 
 	public async Task<Result<UserDto>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
