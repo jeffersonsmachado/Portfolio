@@ -1,40 +1,58 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+import { useAuthStore } from "./stores/auth";
+import { useUiStore } from "./stores/ui";
 
-import { useRouter } from 'vue-router'
-import { useAuthStore } from './stores/auth'
-
-const router = useRouter()
-const auth = useAuthStore()
+const router = useRouter();
+const auth = useAuthStore();
+const ui = useUiStore();
 
 const logout = (): void => {
-	auth.logout()
-	router.push('/login')
-}
-
+	auth.logout();
+	router.push("/login");
+};
 </script>
 
 <template>
-
 	<div class="app-layout">
-
 		<nav class="navbar">
 			<div class="brand" @click="router.push('/')">Portfolio</div>
 			<div class="nav-links">
 				<template v-if="!auth.isLoggedIn">
-					<RouterLink class="nav-btn" active-class="primary" to="/login">Login</RouterLink>
-					<RouterLink class="nav-btn" active-class="primary" to="/register">Register</RouterLink>
-					<RouterLink class="nav-btn" active-class="primary" to="/verify">Verify</RouterLink>
+					<RouterLink class="nav-btn" active-class="primary" to="/login"
+						>Login</RouterLink
+					>
+					<RouterLink class="nav-btn" active-class="primary" to="/register"
+						>Register</RouterLink
+					>
+					<RouterLink class="nav-btn" active-class="primary" to="/verify"
+						>Verify</RouterLink
+					>
 				</template>
 				<template v-else>
-					<div class="profile-avatar" @click="router.push('/profile')" title="Profile">
+					<div
+						class="profile-avatar"
+						@click="router.push('/profile')"
+						title="Profile"
+					>
 						<span>AVATAR</span>
 					</div>
 					<div>
 						<div class="nav-links">
-							<RouterLink v-if="auth.capabilities['roles']?.canRead" class="nav-btn"
-								active-class="primary" to="/roles">Roles</RouterLink>
-							<RouterLink v-if="auth.capabilities['user']?.canRead" class="nav-btn" active-class="primary"
-								to="/users">Users</RouterLink>
+							<RouterLink
+								v-if="auth.capabilities['roles']?.canRead"
+								class="nav-btn"
+								active-class="primary"
+								to="/roles"
+								>Roles</RouterLink
+							>
+							<RouterLink
+								v-if="auth.capabilities['user']?.canRead"
+								class="nav-btn"
+								active-class="primary"
+								to="/users"
+								>Users</RouterLink
+							>
 						</div>
 					</div>
 					<button class="nav-btn logout" @click="logout">Logout</button>
@@ -49,9 +67,15 @@ const logout = (): void => {
 		<footer class="footer">
 			<p>&copy; 2026 Portfolio. All rights reserved.</p>
 		</footer>
-
 	</div>
 
+	<v-overlay
+		:model-value="ui.loading"
+		class="align-center justify-center"
+		persistent
+	>
+		<v-progress-circular indeterminate size="64" color="primary" />
+	</v-overlay>
 </template>
 
 <style scoped>
@@ -85,7 +109,7 @@ const logout = (): void => {
 .navbar .nav-btn {
 	margin-left: 1rem;
 	padding: 0.5rem 1rem;
-	background-color: #007BFF;
+	background-color: #007bff;
 	color: white;
 	border: none;
 	border-radius: 4px;
@@ -115,7 +139,7 @@ const logout = (): void => {
 .profile-avatar {
 	width: 40px;
 	height: 40px;
-	background-color: #007BFF;
+	background-color: #007bff;
 	color: white;
 	border-radius: 50%;
 	display: flex;

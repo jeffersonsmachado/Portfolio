@@ -1,9 +1,14 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue";
 import { useUserStore, type UserDto } from "../services/userService";
-const dialog = ref(false);
+import { useRoleStore } from "../services/roleService";
+import { useUiStore } from "../stores/ui";
 
 const userStore = useUserStore();
+const roleStore = useRoleStore();
+const ui = useUiStore();
+
+const selectedRoleIds = ref<string[]>([]);
 
 const props = defineProps<{
 	modelValue: boolean;
@@ -25,14 +30,27 @@ function cancel() {
 
 async function save() {
 	if (!props.user) return;
-	await userStore.updateUser({
-		...props.user,
-		username: form.value.username,
-		email: form.value.email,
-	});
-	await userStore.fetchUsersWithRoles();
-	emit("update:modelValue", false);
+	ui.startLoading();
+	try {
+		await userStore.updateUser({
+			...props.user,
+			username: form.value.username,
+			email: form.value.email,
+		});
+		await roleStore.setUserRoles(props.user.id, selectedRoleIds.value);
+		await userStore.fetchUsersWithRoles();
+		emit("update:modelValue", false);
+	} finally {
+		ui.stopLoading();
+	}
 }
+
+watch(
+	() => props.modelValue,
+	async (open) => {
+		if (open) await roleStore.fetchRoles();
+	},
+);
 
 watch(
 	() => props.user,
@@ -40,6 +58,7 @@ watch(
 		if (user) {
 			form.value.username = user.username;
 			form.value.email = user.email;
+			selectedRoleIds.value = user.roles.map((r) => r.id);
 		}
 	},
 );
@@ -56,6 +75,15 @@ watch(
 			<v-card-text>
 				<v-text-field v-model="form.username" label="Username" />
 				<v-text-field v-model="form.email" label="Email" />
+				<v-select
+					v-model="selectedRoleIds"
+					:items="roleStore.roles"
+					item-title="name"
+					item-value="id"
+					label="Roles"
+					multiple
+					chips
+				/>
 			</v-card-text>
 			<v-card-actions>
 				<v-btn color="primary" @click="save">Save</v-btn>
