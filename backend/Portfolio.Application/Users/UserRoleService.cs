@@ -1,4 +1,5 @@
 using Portfolio.Application.Events;
+using Portfolio.Application.Users.Dtos;
 using Portfolio.Domain.Aggregates.Roles;
 using Portfolio.Domain.Aggregates.Users;
 using Portfolio.Domain.Shared;

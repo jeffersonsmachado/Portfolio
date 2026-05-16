@@ -1,3 +1,5 @@
+using Portfolio.Application.Users.Dtos;
+
 namespace Portfolio.Application.Users;
 
 /// <summary>

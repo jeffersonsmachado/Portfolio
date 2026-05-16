@@ -14,6 +14,7 @@ using Portfolio.Application.Services;
 using MassTransit;
 using Portfolio.Infrastructure.Messaging;
 using Portfolio.Application.Events;
+using Portfolio.Domain.Aggregates.Permissions;
 
 namespace Portfolio.Infrastructure;
 
@@ -63,6 +64,7 @@ public static class DependencyInjection
 		services.AddScoped<IProfileRepository, ProfileRepository>();
 		services.AddScoped<IUserRepository, UserRepository>();
 		services.AddScoped<IRoleRepository, RoleRepository>();
+		services.AddScoped<IPermissionRepository, PermissionRepository>();
 
 		#endregion
 
@@ -77,6 +79,8 @@ public static class DependencyInjection
 		services.AddScoped<IProfileService, ProfileService>();
 		services.AddScoped<IRoleService, RoleService>();
 		services.AddScoped<IUserRoleService, UserRoleService>();
+		services.AddScoped<IPermissionService, PermissionService>();
+
 
 		// INFRASTRUCTURE
 		services.AddScoped<SmtpEmailService>();

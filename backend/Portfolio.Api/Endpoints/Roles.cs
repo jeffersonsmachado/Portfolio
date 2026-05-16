@@ -12,6 +12,8 @@ public static class RolesEndpoints
 	{
 		var roleGroup = app.MapGroup("/roles").WithOpenApi();
 
+		var permGroup = app.MapGroup("/permissions").WithOpenApi();
+
 		roleGroup.MapGet("/", async (IRoleService service) =>
 		{
 			return (await service.GetAllRolesAsync(cancellationToken))
@@ -28,7 +30,7 @@ public static class RolesEndpoints
 		roleGroup.MapPost("/{roleId:guid}/assign/{userId:guid}", async (Guid roleId, Guid userId, IRoleService service) =>
 		{
 			return (await service.AssignRoleToUserAsync(userId, roleId, cancellationToken))
-				.ToHttpResult(_ => Results.Ok(), StatusCodes.Status400BadRequest);
+				.ToHttpResult(user => Results.Ok(user), StatusCodes.Status400BadRequest);
 		}).RequireAuthorization(Permissions.RolesUpdate)
 		.RequireAuthorization(Permissions.UserUpdate);
 
@@ -48,6 +50,18 @@ public static class RolesEndpoints
 		{
 			return (await service.GetRoleByNameAsync(name, cancellationToken))
 				.ToHttpResult(role => Results.Ok(role), StatusCodes.Status404NotFound);
+		}).RequireAuthorization(Permissions.RolesView);
+
+		roleGroup.MapPut("/{roleId:guid}/permissions", async (Guid roleId, SetRolePermissionRequest req, IRoleService service) =>
+		{
+			return (await service.SetRolePermissionsAsync(roleId, req.PermissionIds, cancellationToken))
+				.ToHttpResult(role => Results.Ok(role), StatusCodes.Status404NotFound);
+		}).RequireAuthorization(Permissions.RolesUpdate);
+
+		permGroup.MapGet("/", async (IPermissionService service) =>
+		{
+			return (await service.GetAllPermissionsAsync(cancellationToken))
+				.ToHttpResult(perms => Results.Ok(perms), failureStatusCode: StatusCodes.Status204NoContent);
 		}).RequireAuthorization(Permissions.RolesView);
 	}
 }

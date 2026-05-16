@@ -1,3 +1,4 @@
+using Portfolio.Application.Users.Dtos;
 using Portfolio.Domain.Shared;
 
 namespace Portfolio.Application.Users;

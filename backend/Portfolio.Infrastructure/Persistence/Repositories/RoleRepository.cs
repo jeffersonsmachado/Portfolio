@@ -30,11 +30,6 @@ public class RoleRepository(PortfolioDbContext context) : IRoleRepository
 			.FirstOrDefaultAsync(r => r.Name == name, cancellationToken);
 	}
 
-	public Task<Role?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
-	{
-		throw new NotSupportedException("Roles do not have an email field.");
-	}
-
 	public async Task AddAsync(Role role, CancellationToken cancellationToken = default)
 	{
 		await _context.Roles.AddAsync(role, cancellationToken);
