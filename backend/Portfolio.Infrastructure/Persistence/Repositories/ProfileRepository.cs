@@ -13,17 +13,32 @@ public class ProfileRepository(PortfolioDbContext context) : IProfileRepository
 
 	public async Task<Profile?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
 	{
-		return await _context.Profiles.Include(p => p.User).FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+		return await _context.Profiles
+			.Include(p => p.User)
+			.Include(p => p.Skills)
+			.Include(p => p.Experiences)
+			.Include(p => p.Educations)
+			.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 	}
 
 	public async Task<IEnumerable<Profile>> GetAllAsync(CancellationToken cancellationToken = default)
 	{
-		return await _context.Profiles.Include(p => p.User).ToListAsync(cancellationToken);
+		return await _context.Profiles
+			.Include(p => p.User)
+			.Include(p => p.Skills)
+			.Include(p => p.Experiences)
+			.Include(p => p.Educations)
+			.ToListAsync(cancellationToken);
 	}
 
 	public async Task<Profile?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
 	{
-		return await _context.Profiles.Include(p => p.User).FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
+		return await _context.Profiles
+			.Include(p => p.User)
+			.Include(p => p.Skills)
+			.Include(p => p.Experiences)
+			.Include(p => p.Educations)
+			.FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
 	}
 
 	public async Task AddAsync(Profile profile, CancellationToken cancellationToken = default)
@@ -50,6 +65,11 @@ public class ProfileRepository(PortfolioDbContext context) : IProfileRepository
 
 	public async Task<Profile?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
 	{
-		return await _context.Profiles.Include(p => p.User).FirstOrDefaultAsync(p => p.User.Id == userId, cancellationToken);
+		return await _context.Profiles
+			.Include(p => p.User)
+			.Include(p => p.Skills)
+			.Include(p => p.Experiences)
+			.Include(p => p.Educations)
+			.FirstOrDefaultAsync(p => p.User.Id == userId, cancellationToken);
 	}
 }

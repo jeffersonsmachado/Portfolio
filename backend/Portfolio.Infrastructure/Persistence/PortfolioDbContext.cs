@@ -15,6 +15,9 @@ public class PortfolioDbContext(DbContextOptions<PortfolioDbContext> options) : 
 	public DbSet<Role> Roles => Set<Role>();
 	public DbSet<Permission> Permissions => Set<Permission>();
 	public DbSet<AuditLog> AuditLog => Set<AuditLog>();
+	public DbSet<Skill> Skills => Set<Skill>();
+	public DbSet<Experience> Experiences => Set<Experience>();
+	public DbSet<Education> Educations => Set<Education>();
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
@@ -158,6 +161,7 @@ public class PortfolioDbContext(DbContextOptions<PortfolioDbContext> options) : 
 				.HasColumnType($"character varying({PermissionConstants.MaxNameLength})");
 		});
 
+		// Configure AuditLog entity
 		modelBuilder.Entity<AuditLog>(entity =>
 		{
 			entity.ToTable("audit_log");
@@ -178,6 +182,58 @@ public class PortfolioDbContext(DbContextOptions<PortfolioDbContext> options) : 
 			entity.Property(e => e.OccurredAt)
 				.HasColumnType("timestamp with time zone")
 				.IsRequired();
+		});
+
+		// Configure Skill entity
+		modelBuilder.Entity<Skill>(entity =>
+		{
+			entity.ToTable("skills");
+
+			entity.HasKey(e => e.Id);
+			entity.Property(e => e.Id)
+				.ValueGeneratedNever();
+
+			entity.Property(e => e.Name)
+				.IsRequired()
+				.HasMaxLength(100)
+				.HasColumnType("character varying(100)");
+
+			entity.HasOne<Profile>()
+				.WithMany(p => p.Skills)
+				.HasForeignKey(e => e.ProfileId)
+				.OnDelete(DeleteBehavior.Cascade);
+		});
+
+		// Configure Experience entity
+		modelBuilder.Entity<Experience>(entity =>
+		{
+			entity.ToTable("experiences");
+			entity.HasKey(e => e.Id);
+			entity.Property(e => e.Id).ValueGeneratedNever();
+			entity.Property(e => e.Company).IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
+			entity.Property(e => e.Role).IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
+			entity.Property(e => e.StartMonth).IsRequired();
+			entity.Property(e => e.StartYear).IsRequired();
+			entity.Property(e => e.EndMonth).IsRequired(false);
+			entity.Property(e => e.EndYear).IsRequired(false);
+			entity.Property(e => e.Current).IsRequired().HasDefaultValue(false);
+			entity.Property(e => e.Description).HasMaxLength(2000).HasDefaultValue(string.Empty);
+			entity.HasOne<Profile>().WithMany(p => p.Experiences).HasForeignKey(e => e.ProfileId).OnDelete(DeleteBehavior.Cascade);
+		});
+
+		// Configure Education entity
+		modelBuilder.Entity<Education>(entity =>
+		{
+			entity.ToTable("educations");
+			entity.HasKey(e => e.Id);
+			entity.Property(e => e.Id).ValueGeneratedNever();
+			entity.Property(e => e.Institution).IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
+			entity.Property(e => e.Degree).IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
+			entity.Property(e => e.StartMonth).IsRequired();
+			entity.Property(e => e.StartYear).IsRequired();
+			entity.Property(e => e.EndMonth).IsRequired(false);
+			entity.Property(e => e.EndYear).IsRequired(false);
+			entity.HasOne<Profile>().WithMany(p => p.Educations).HasForeignKey(e => e.ProfileId).OnDelete(DeleteBehavior.Cascade);
 		});
 	}
 }

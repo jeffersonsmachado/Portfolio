@@ -17,6 +17,9 @@ public partial class Profile
 	#region Navigation Properties
 
 	public virtual User User { get; set; } = null!;
+	public virtual ICollection<Skill> Skills { get; set; } = [];
+	public virtual ICollection<Experience> Experiences { get; set; } = [];
+	public virtual ICollection<Education> Educations { get; set; } = [];
 
 	#endregion
 
@@ -75,6 +78,92 @@ public partial class Profile
 			BioTitle = bioTitle,
 			AvatarUrl = avatarUrl
 		};
+	}
+
+	#endregion
+
+	#region Domain Methods
+
+	public Skill? AddSkill(string name)
+	{
+		if (string.IsNullOrWhiteSpace(name) || Skills.Any(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+		{
+			return null;
+		}
+		Skill skill = Skill.Create(name, Id);
+		Skills.Add(skill);
+		return skill;
+	}
+
+	public void RemoveSkill(Guid skillId)
+	{
+		var skill = Skills.FirstOrDefault(s => s.Id == skillId);
+		if (skill != null)
+		{
+			Skills.Remove(skill);
+		}
+	}
+
+	public Experience? AddExperience(string company, string role, int startMonth, int startYear, int? endMonth, int? endYear, bool current, string description)
+	{
+		if (string.IsNullOrWhiteSpace(company) || string.IsNullOrWhiteSpace(role))
+		{
+			return null;
+		}
+		Experience experience = Experience.Create(company, role, startMonth, startYear, endMonth, endYear, current, description, Id);
+		Experiences.Add(experience);
+		return experience;
+	}
+
+	public Experience? UpdateExperience(Guid experienceId, string company, string role, int startMonth, int startYear, int? endMonth, int? endYear, bool current, string description)
+	{
+		var experience = Experiences.FirstOrDefault(e => e.Id == experienceId);
+		if (experience != null)
+		{
+			experience.Update(company, role, startMonth, startYear, endMonth, endYear, current, description);
+			return experience;
+		}
+		return null;
+	}
+
+	public void RemoveExperience(Guid experienceId)
+	{
+		var experience = Experiences.FirstOrDefault(e => e.Id == experienceId);
+		if (experience != null)
+		{
+			Experiences.Remove(experience);
+		}
+	}
+
+	public Education? AddEducation(string institution, string degree, int startMonth, int startYear, int? endMonth, int? endYear)
+	{
+		if (string.IsNullOrWhiteSpace(institution) || string.IsNullOrWhiteSpace(degree))
+		{
+			return null;
+		}
+		Education education = Education.Create(institution, degree, startMonth, startYear, endMonth, endYear, Id);
+		Educations.Add(education);
+		return education;
+	}
+
+	public Education? UpdateEducation(Guid educationId, string institution, string degree, int startMonth, int startYear, int? endMonth, int? endYear)
+	{
+		var education = Educations.FirstOrDefault(e => e.Id == educationId);
+		if (education != null)
+		{
+			education.Update(institution, degree, startMonth, startYear, endMonth, endYear);
+			return education;
+		}
+		return null;
+	}
+
+	public void RemoveEducation(Guid educationId)
+	{
+		var education = Educations.FirstOrDefault(e => e.Id == educationId);
+		if (education != null)
+		{
+			Educations.Remove(education);
+		}
 	}
 
 	#endregion
