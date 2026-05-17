@@ -35,11 +35,13 @@ public static class PortfolioDbContextSeed
 
 		logger.LogInformation("Seeded users to the database");
 
+		var profileAdminProfile = Profile.Create("Admin Profile", admin);
 		var profileOneProfile = Profile.Create("ProfileOne", users[1]);
 		var profileTwoProfile = Profile.Create("ProfileTwo", users[2]);
 
 		List<Profile> profiles =
 		[
+			profileAdminProfile,
 			profileOneProfile,
 			profileTwoProfile
 		];

@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import {
+	useProfileStore,
+	type ExperienceDto,
+	type EducationDto,
+} from "../../services/profileService";
 
 // Interfaces
 interface Experience {
@@ -24,44 +29,15 @@ interface Education {
 	endYear: string;
 }
 
-const name = ref("Jeff");
-const title = ref("Software Developer");
-const bio = ref(
-	"Passionate about building impactful software solutions. Experienced in full-stack development in .NET and JavaScript ecosystems. Always eager to learn and take on new challenges.",
-);
+const profileStore = useProfileStore();
 
-const skills = ref(["C#", "JavaScript", "Vue.js", "ASP.NET Core"]);
+const name = ref("");
+const bioTitle = ref("");
+const bio = ref("");
 const newSkill = ref("");
 
-const experiences = ref<Experience[]>([
-	{
-		id: "1",
-		company: "Tech Company A",
-		role: ".NET Developer",
-		startMonth: "January",
-		startYear: "2020",
-		endMonth: "Present",
-		endYear: "",
-		current: true,
-		description:
-			"Developed and maintained web applications using ASP.NET Core and Vue.js. Collaborated with cross-functional teams to design scalable solutions. Implemented new features and optimized performance, resulting in a 20% increase in user engagement.",
-	},
-]);
-
-const educations = ref<Education[]>([
-	{
-		id: "1",
-		institution: "University of Technology",
-		degree: "B.Sc. in Computer Science",
-		startMonth: "September",
-		startYear: "2015",
-		endMonth: "June",
-		endYear: "2019",
-	},
-]);
-
 const expDialogOpen = ref(false);
-const editingExperience = ref<Experience | null>(null);
+const editingExperience = ref<string | null>(null);
 const expForm = ref<Omit<Experience, "id">>({
 	company: "",
 	role: "",
@@ -74,7 +50,7 @@ const expForm = ref<Omit<Experience, "id">>({
 });
 
 const eduDialogOpen = ref(false);
-const editingEducation = ref<Education | null>(null);
+const editingEducation = ref<string | null>(null);
 const eduForm = ref<Omit<Education, "id">>({
 	institution: "",
 	degree: "",
@@ -84,16 +60,25 @@ const eduForm = ref<Omit<Education, "id">>({
 	endYear: "",
 });
 
-function removeSkill(index: number) {
-	skills.value.splice(index, 1);
+async function saveProfile() {
+	await profileStore.updateProfile({
+		name: name.value,
+		bioTitle: bioTitle.value,
+		bio: bio.value,
+	});
 }
 
-function addSkill() {
+async function addSkill() {
 	const skill = newSkill.value.trim();
-	if (skill && !skills.value.includes(skill)) {
-		skills.value.push(skill);
-		newSkill.value = "";
+	if (!skill) {
+		return;
 	}
+	await profileStore.addSkill(skill);
+	newSkill.value = "";
+}
+
+async function removeSkill(skillId: string) {
+	await profileStore.removeSkill(skillId);
 }
 
 function openAddExp() {
@@ -111,6 +96,61 @@ function openAddExp() {
 	expDialogOpen.value = true;
 }
 
+async function saveExp() {
+	const data = {
+		company: expForm.value.company,
+		role: expForm.value.role,
+		startMonth: Number(expForm.value.startMonth),
+		startYear: Number(expForm.value.startYear),
+		endMonth: expForm.value.endMonth ? Number(expForm.value.endMonth) : null,
+		endYear: expForm.value.endYear ? Number(expForm.value.endYear) : null,
+		current: expForm.value.current,
+		description: expForm.value.description,
+	};
+	if (editingExperience.value) {
+		await profileStore.updateExperience(editingExperience.value, data);
+	} else {
+		await profileStore.addExperience(data);
+	}
+	expDialogOpen.value = false;
+}
+
+function openEditExp(exp: ExperienceDto) {
+	editingExperience.value = exp.id;
+	expForm.value = {
+		company: exp.company,
+		role: exp.role,
+		startMonth: String(exp.startMonth).padStart(2, "0"),
+		startYear: String(exp.startYear),
+		endMonth: exp.endMonth ? String(exp.endMonth).padStart(2, "0") : "",
+		endYear: exp.endYear ? String(exp.endYear) : "",
+		current: exp.current,
+		description: exp.description,
+	};
+	expDialogOpen.value = true;
+}
+
+async function removeExp(id: string) {
+	await profileStore.removeExperience(id);
+}
+
+async function saveEdu() {
+	const data = {
+		institution: eduForm.value.institution,
+		degree: eduForm.value.degree,
+		startMonth: Number(eduForm.value.startMonth),
+		startYear: Number(eduForm.value.startYear),
+		endMonth: eduForm.value.endMonth ? Number(eduForm.value.endMonth) : null,
+		endYear: eduForm.value.endYear ? Number(eduForm.value.endYear) : null,
+	};
+	if (editingEducation.value) {
+		await profileStore.updateEducation(editingEducation.value, data);
+	} else {
+		await profileStore.addEducation(data);
+	}
+	eduDialogOpen.value = false;
+}
+
 function openAddEdu() {
 	editingEducation.value = null;
 	eduForm.value = {
@@ -124,76 +164,48 @@ function openAddEdu() {
 	eduDialogOpen.value = true;
 }
 
-function saveExp() {
-	if (editingExperience.value) {
-		const index = experiences.value.findIndex(
-			(e) => e.id === editingExperience.value!.id,
-		);
-
-		if (index !== -1) {
-			experiences.value[index] = {
-				...expForm.value,
-				id: editingExperience.value.id,
-			};
-		}
-	} else {
-		experiences.value.push({ ...expForm.value, id: Date.now().toString() });
-	}
-	expDialogOpen.value = false;
-}
-
-function openEditExp(exp: Experience) {
-	editingExperience.value = exp;
-	expForm.value = { ...exp };
-	expDialogOpen.value = true;
-}
-
-function removeExp(id: string) {
-	experiences.value = experiences.value.filter((e) => e.id !== id);
-}
-
-function saveEdu() {
-	if (editingEducation.value) {
-		const index = educations.value.findIndex(
-			(e) => e.id === editingEducation.value!.id,
-		);
-
-		if (index !== -1) {
-			educations.value[index] = {
-				...eduForm.value,
-				id: editingEducation.value.id,
-			};
-		}
-	} else {
-		educations.value.push({ ...eduForm.value, id: Date.now().toString() });
-	}
-	eduDialogOpen.value = false;
-}
-
-function openEditEdu(edu: Education) {
-	editingEducation.value = edu;
-	eduForm.value = { ...edu };
+function openEditEdu(edu: EducationDto) {
+	editingEducation.value = edu.id;
+	eduForm.value = {
+		institution: edu.institution,
+		degree: edu.degree,
+		startMonth: String(edu.startMonth).padStart(2, "0"),
+		startYear: String(edu.startYear),
+		endMonth: edu.endMonth ? String(edu.endMonth).padStart(2, "0") : "",
+		endYear: edu.endYear ? String(edu.endYear) : "",
+	};
 	eduDialogOpen.value = true;
 }
 
-function removeEdu(id: string) {
-	educations.value = educations.value.filter((e) => e.id !== id);
+async function removeEdu(id: string) {
+	await profileStore.removeEducation(id);
 }
+
+onMounted(async () => {
+	await profileStore.fetchProfile();
+	name.value = profileStore.profileData?.name || "";
+	bioTitle.value = profileStore.profileData?.bioTitle || "";
+	bio.value = profileStore.profileData?.bio || "";
+});
 
 // Helpers
 
 function formatPeriod(
-	startMonth: string,
-	startYear: string,
-	endMonth: string,
-	endYear: string,
+	startMonth: number | string | null,
+	startYear: number | string | null,
+	endMonth: number | string | null,
+	endYear: number | string | null,
 	current = false,
 ) {
-	const start = startMonth && startYear ? `${startMonth}/${startYear}` : "";
+	const monthName = (m: number | string | null) =>
+		months.find((mo) => mo.value === String(m ?? "").padStart(2, "0"))?.title ??
+		String(m ?? "");
+	const start =
+		startMonth && startYear ? `${monthName(startMonth)}/${startYear}` : "";
 	const end = current
 		? "Atual"
 		: endMonth && endYear
-			? `${endMonth}/${endYear}`
+			? `${monthName(endMonth)}/${endYear}`
 			: "";
 	return [start, end].filter(Boolean).join(" – ");
 }
@@ -220,11 +232,12 @@ const years = Array.from({ length: 50 }, (_, i) => String(currentYear - i));
 <template>
 	<v-container max-width="800px">
 		<!-- Basic info -->
+
 		<v-card class="mb-4" elevation="2" rounded="lg">
 			<v-card-title>Profile Information</v-card-title>
 			<v-card-text>
 				<v-text-field v-model="name" label="Name" />
-				<v-text-field v-model="title" label="Title" />
+				<v-text-field v-model="bioTitle" label="Title" />
 				<v-textarea v-model="bio" label="Bio" rows="3" auto-grow />
 			</v-card-text>
 		</v-card>
@@ -236,14 +249,14 @@ const years = Array.from({ length: 50 }, (_, i) => String(currentYear - i));
 			<v-card-text>
 				<div class="d-flex flex-wrap gap-2 mb-4">
 					<v-chip
-						v-for="(skill, i) in skills"
+						v-for="(skill, i) in profileStore.profileData?.skills"
 						:key="i"
 						closable
-						@click:close="removeSkill(i)"
+						@click:close="removeSkill(skill.id)"
 						color="primary"
 						variant="tonal"
 					>
-						{{ skill }}
+						{{ skill.name }}
 					</v-chip>
 				</div>
 				<div class="d-flex gap-2">
@@ -270,7 +283,11 @@ const years = Array.from({ length: 50 }, (_, i) => String(currentYear - i));
 			</v-card-title>
 			<v-card-text>
 				<v-list>
-					<v-list-item v-for="exp in experiences" :key="exp.id" class="mb-2">
+					<v-list-item
+						v-for="exp in profileStore.profileData?.experiences"
+						:key="exp.id"
+						class="mb-2"
+					>
 						<v-card variant="outlined" width="100%">
 							<v-card-text>
 								<div class="d-flex justify-space-between">
@@ -329,7 +346,11 @@ const years = Array.from({ length: 50 }, (_, i) => String(currentYear - i));
 			</v-card-title>
 			<v-card-text>
 				<v-list>
-					<v-list-item v-for="edu in educations" :key="edu.id" class="mb-2">
+					<v-list-item
+						v-for="edu in profileStore.profileData?.educations"
+						:key="edu.id"
+						class="mb-2"
+					>
 						<v-card variant="outlined" width="100%">
 							<v-card-text>
 								<div class="d-flex justify-space-between">
@@ -373,9 +394,17 @@ const years = Array.from({ length: 50 }, (_, i) => String(currentYear - i));
 				</v-list>
 			</v-card-text>
 		</v-card>
+
+		<!-- Actions -->
+
+		<v-card-actions>
+			<v-spacer />
+			<v-btn color="primary" @click="saveProfile">Salvar</v-btn>
+		</v-card-actions>
 	</v-container>
 
 	<!-- Dialog experience -->
+
 	<v-dialog v-model="expDialogOpen" max-width="600px">
 		<v-card>
 			<v-card-title
@@ -434,6 +463,7 @@ const years = Array.from({ length: 50 }, (_, i) => String(currentYear - i));
 	</v-dialog>
 
 	<!-- Dialog academic background -->
+
 	<v-dialog v-model="eduDialogOpen" max-width="600px">
 		<v-card>
 			<v-card-title
