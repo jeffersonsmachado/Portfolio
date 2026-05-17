@@ -19,4 +19,5 @@ public interface IAuthService
 	Task<Result<LoginDto>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
 	Task<Result<string>> ResendVerificationTokenAsync(ResendVerificationTokenRequest request, CancellationToken cancellationToken = default);
 	Task<Result<UserDto>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
+	Task<Result<Dictionary<string, ResourceCapabilities>>> GetCapabilitiesAsync(Guid userId, CancellationToken cancellationToken = default);
 }

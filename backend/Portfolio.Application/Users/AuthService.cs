@@ -193,4 +193,33 @@ public class AuthService(IUserRepository userRepository, IEmailService emailServ
 			Email = user.Email.Value
 		});
 	}
+
+	public async Task<Result<Dictionary<string, ResourceCapabilities>>> GetCapabilitiesAsync(Guid userId, CancellationToken cancellationToken = default)
+	{
+		var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+		if (user == null)
+		{
+			return Result<Dictionary<string, ResourceCapabilities>>.Failure(new Error("USER_NOT_FOUND", "User not found."));
+		}
+
+		var capabilities = user.Roles
+			.SelectMany(r => r.Permissions)
+			.Select(p => p.Name)
+			.Distinct()
+			.Select(p => p.Split(':'))
+			.Where(parts => parts.Length == 2)
+			.GroupBy(parts => parts[0], parts => parts[1])
+			.ToDictionary(
+				g => g.Key,
+				g => new ResourceCapabilities
+				{
+					CanCreate = g.Contains("create"),
+					CanRead = g.Contains("view"),
+					CanUpdate = g.Contains("update"),
+					CanDelete = g.Contains("delete")
+				}
+			);
+
+		return Result<Dictionary<string, ResourceCapabilities>>.Success(capabilities);
+	}
 }

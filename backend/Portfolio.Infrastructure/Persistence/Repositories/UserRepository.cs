@@ -13,7 +13,9 @@ public class UserRepository(PortfolioDbContext context) : IUserRepository
 
 	public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
 	{
-		return _context.Users.FindAsync([id], cancellationToken).AsTask();
+		return _context.Users
+			.Include(u => u.Roles)
+			.ThenInclude(u => u.Permissions).FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
 	}
 
 	public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default)

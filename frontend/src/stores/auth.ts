@@ -70,6 +70,27 @@ export const useAuthStore = defineStore("auth", () => {
 		capabilities.value = (data.capabilities as Capabilities) ?? {};
 	}
 
+	async function fetchMe() {
+		if (!token.value) {
+			return;
+		}
+
+		const response = await fetch("https://localhost:7132/auth/me", {
+			headers: {
+				Authorization: `Bearer ${token.value}`,
+			},
+		});
+
+		if (response.status === 401) {
+			logout();
+			return;
+		}
+
+		if (response.ok) {
+			capabilities.value = (await response.json()) as Capabilities;
+		}
+	}
+
 	return {
 		token,
 		isLoggedIn,
@@ -78,5 +99,6 @@ export const useAuthStore = defineStore("auth", () => {
 		logout,
 		login,
 		capabilities,
+		fetchMe,
 	};
 });

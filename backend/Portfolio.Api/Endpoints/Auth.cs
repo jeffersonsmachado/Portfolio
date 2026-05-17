@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Portfolio.Api.Extensions;
 using Portfolio.Api.Filters;
 using Portfolio.Application.Users;
@@ -35,5 +36,19 @@ public static class AuthEndpoints
 			var result = await authService.ResendVerificationTokenAsync(req, cancellationToken);
 			return result.ToHttpResult(_ => Results.Ok(), StatusCodes.Status400BadRequest);
 		}).AddEndpointFilter<ValidationFilter<ResendVerificationTokenRequest>>();
+
+		authGroup.MapGet("/me", async (ClaimsPrincipal user, IAuthService authService) =>
+		{
+			var claim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier ||
+				c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
+
+			if (!Guid.TryParse(claim?.Value, out var userId))
+			{
+				return Results.Unauthorized();
+			}
+
+			return (await authService.GetCapabilitiesAsync(userId, cancellationToken))
+				.ToHttpResult(capabilities => Results.Ok(capabilities), StatusCodes.Status401Unauthorized);
+		}).RequireAuthorization();
 	}
 }
