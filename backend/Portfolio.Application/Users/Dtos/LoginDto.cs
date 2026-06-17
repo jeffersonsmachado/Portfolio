@@ -12,4 +12,5 @@ public class LoginDto
 	/// The frontend uses this directly — it never sees raw roles or permission strings.
 	/// </summary>
 	public Dictionary<string, ResourceCapabilities> Capabilities { get; set; } = [];
+	public UserDto? User { get; set; }
 }

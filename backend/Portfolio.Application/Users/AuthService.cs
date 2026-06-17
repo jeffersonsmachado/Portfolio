@@ -95,7 +95,13 @@ public class AuthService(IUserRepository userRepository, IEmailService emailServ
 		return Result<LoginDto>.Success(new LoginDto
 		{
 			Token = token,
-			Capabilities = capabilities
+			Capabilities = capabilities,
+			User = new UserDto
+			{
+				Id = user.Id,
+				Username = user.Name,
+				Email = user.Email
+			}
 		});
 	}
 

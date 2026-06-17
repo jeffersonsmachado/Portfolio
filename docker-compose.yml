@@ -15,37 +15,37 @@ services:
     networks:
       - portfolio_network
   # pgadmin4 SERVICE
-  pgadmin4:
-    image: dpage/pgadmin4:latest
-    container_name: portfolio-pgadmin4
-    ports:
-      - "${PGADMIN_PORT}:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    depends_on:
-      - postgres
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-      - ./config/servers.json:/pgadmin4/servers.json
-    networks:
-      - portfolio_network
+  # pgadmin4:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: portfolio-pgadmin4
+  #   ports:
+  #     - "${PGADMIN_PORT}:80"
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+  #   depends_on:
+  #     - postgres
+  #   volumes:
+  #     - pgadmin_data:/var/lib/pgadmin
+  #     - ./config/servers.json:/pgadmin4/servers.json
+  #   networks:
+  #     - portfolio_network
 
   # FRONTEND SERVICE
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: portfolio-frontend
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    networks:
-      - portfolio_network
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: portfolio-frontend
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   networks:
+  #     - portfolio_network
 
-    # MAILPIT SERVICE
+  # MAILPIT SERVICE
   mailpit:
     image: axllent/mailpit
     container_name: portfolio-mailpit
@@ -74,8 +74,8 @@ services:
 volumes:
   postgres_data:
     name: portfolio_postgres_data
-  pgadmin_data:
-    name: portfolio_pgadmin_data
+  # pgadmin_data:
+  #   name: portfolio_pgadmin_data
   mailpit_data:
     name: portfolio_mailpit_data
   rabbitmq_data:

@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Portfolio.Application.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Portfolio.Api.Middlewares;
 
 #region Builder Setup
 
@@ -28,7 +29,7 @@ builder.Services.AddCors(options =>
 	options.AddPolicy("FrontendDev", policy =>
 	{
 		policy
-			.WithOrigins("http://localhost:5173", "http://localhost:5174")
+			.WithOrigins(["http://localhost:5173", "http://localhost:5174"])
 			.AllowAnyHeader()
 			.AllowAnyMethod();
 	});
@@ -103,6 +104,7 @@ if (app.Environment.IsDevelopment())
 	app.MapScalarApiReference();
 }
 
+app.UseMiddleware<ResponseTimeMiddleware>();
 
 app.UseExceptionHandler();
 
